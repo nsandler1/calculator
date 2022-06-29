@@ -20,32 +20,31 @@ class Calculator:
 
     def __init__(self):
         self.queue = []
+        self.label_text = None
         self.gui = self.init_gui()
         self.gui.mainloop()
+
 
     def init_gui(self):
         gui = Tk()
         gui.geometry(DIM_FRAME)
         display = ttk.Frame(gui, padding=10, border=20)
         btns = ttk.Frame(gui, padding=10)
-        display.grid()
+        display.grid(column=5, row=2)
         btns.grid()
 
+        self.label_text = StringVar(display, "test")
         ttk.Style().configure('TButton', font=('Helvetica', BUTTON_FONT_SIZE))
         ttk.Style().configure('TLabel', font=('Helvetica', BUTTON_FONT_SIZE))
-        ttk.Label(display, text="Hello World!").grid(column=0, row=0, columnspan=4)
+        ttk.Label(display, textvariable=self.label_text).grid(column=0, row=0, columnspan=4)
 
         kwargs = {
             "width": BUTTON_WIDTH
         }
 
-
-        ttk.Button(btns, text="Clear", command=gui.destroy, **kwargs).grid(
-            column=0,
-            row=0,
-            columnspan=3,
-            sticky=tkinter.W+tkinter.E
-        )
+        ttk.Button(btns, text="C", command=gui.destroy, **kwargs).grid(column=0, row=0)
+        ttk.Button(btns, text="(", command=gui.destroy, **kwargs).grid(column=1, row=0)
+        ttk.Button(btns, text=")", command=gui.destroy, **kwargs).grid(column=2, row=0)
         ttk.Button(btns, text="/", command=gui.destroy, **kwargs).grid(column=3, row=0)
 
         ttk.Button(btns, text="7", command=gui.destroy, **kwargs).grid(column=0, row=1)
@@ -72,9 +71,9 @@ class Calculator:
         ttk.Button(btns, text=".", command=gui.destroy, **kwargs).grid(column=2, row=4)
         ttk.Button(btns, text="=", command=gui.destroy, **kwargs).grid(column=3, row=4)
 
-        #gui.rowconfigure((0,1), weight=1)  # make buttons stretch when window is resized
-        #gui.columnconfigure((0,2), weight=1)
-        return gui
+        gui.rowconfigure((0,1), weight=1)  # make buttons stretch when window is resized
+        gui.columnconfigure((0,2), weight=1)
 
+        return gui
 
 calc = Calculator()
