@@ -40,7 +40,12 @@ class Calculator:
         }
 
 
-        ttk.Button(btns, text="Clear", command=gui.destroy, **kwargs).grid(column=0, row=0, columnspan=3, sticky=tkinter.W+tkinter.E)
+        ttk.Button(btns, text="Clear", command=gui.destroy, **kwargs).grid(
+            column=0,
+            row=0,
+            columnspan=3,
+            sticky=tkinter.W+tkinter.E
+        )
         ttk.Button(btns, text="/", command=gui.destroy, **kwargs).grid(column=3, row=0)
 
         ttk.Button(btns, text="7", command=gui.destroy, **kwargs).grid(column=0, row=1)
@@ -58,7 +63,12 @@ class Calculator:
         ttk.Button(btns, text="3", command=gui.destroy, **kwargs).grid(column=2, row=3)
         ttk.Button(btns, text="+", command=gui.destroy, **kwargs).grid(column=3, row=3)
 
-        ttk.Button(btns, text="0", command=gui.destroy, **kwargs).grid(column=0, row=4, columnspan=2, sticky=tkinter.W+tkinter.E)
+        ttk.Button(btns, text="0", command=gui.destroy, **kwargs).grid(
+            column=0,
+            row=4,
+            columnspan=2,
+            sticky=tkinter.W+tkinter.E
+        )
         ttk.Button(btns, text=".", command=gui.destroy, **kwargs).grid(column=2, row=4)
         ttk.Button(btns, text="=", command=gui.destroy, **kwargs).grid(column=3, row=4)
 
