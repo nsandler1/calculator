@@ -95,6 +95,8 @@ class Calculator:
         return gui
 
     def update_disp(self, val):
+        # TODO: prevent decimals from being placed multiple times in one number
+        # EX: 32.533.4
         new_text = ''.join([item for item in self.memory[1 - DISP_WIDTH:]]) + val
         self.label.configure(text=new_text)
         self.memory.append(val)
