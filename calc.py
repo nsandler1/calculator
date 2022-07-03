@@ -130,9 +130,14 @@ class Calculator:
         while parsed_mem.count(self.Operation.DECIMAL) > 0:
             idx = parsed_mem.index(self.Operation.DECIMAL)
             new_val = float(f"{parsed_mem[idx - 1]}.{parsed_mem[idx + 1]}")
-            parsed_mem[idx + 1] = new_val
-            # Find way to discard combined list elements
+            parsed_mem.insert(idx + 2, new_val)
 
+            for i in range(idx + 2, len(parsed_mem)): # left shift parsed_mem by 2
+                parsed_mem[i - 3] = parsed_mem[i]
+
+            parsed_mem = parsed_mem[:len(parsed_mem) - 2]
+
+        parsed_mem = parsed_mem[:len(parsed_mem) - 2]
         print(parsed_mem)
 
         # TODO: Parse parenthesis
