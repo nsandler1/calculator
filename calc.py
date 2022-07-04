@@ -127,6 +127,10 @@ class Calculator:
         print(parsed_mem)
 
         # Parse decimals
+        # Validation:
+        #   - interpret .X as 0.X
+        #   - prohibit multiple decimals in a single number
+
         while parsed_mem.count(self.Operation.DECIMAL) > 0:
             idx = parsed_mem.index(self.Operation.DECIMAL)
             new_val = float(f"{parsed_mem[idx - 1]}.{parsed_mem[idx + 1]}")
@@ -146,6 +150,6 @@ class Calculator:
         # TODO: Execute calculation
 
 
-
+# TODO: add backspace
 if __name__ == "__main__":
     calc = Calculator()
