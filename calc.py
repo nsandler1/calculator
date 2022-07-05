@@ -30,7 +30,6 @@ class Calculator:
 
     def __init__(self):
         self.memory = []
-        self.label = None
         self.label_text = ""
         self.gui = self.init_gui()
         self.gui.mainloop()
@@ -84,9 +83,10 @@ class Calculator:
         ttk.Button(keypad, text="Quit", command=gui.destroy, **kwargs).grid(
             column=0,
             row=5,
-            columnspan=4,
+            columnspan=3,
             sticky=tkinter.W+tkinter.E
         )
+        ttk.Button(keypad, text="del", command=self.backspace, **kwargs).grid(column=3, row=5)
 
         gui.rowconfigure((0,1), weight=1)  # make buttons stretch when window is resized
         gui.columnconfigure((0,2), weight=1)
@@ -94,18 +94,25 @@ class Calculator:
         self.label = label
         return gui
 
-    def update_disp(self, val):
+    def update_disp(self, val=None):
         # TODO: prevent decimals from being placed multiple times in one number
         # EX: 32.533.4
-        new_text = ''.join([item for item in self.memory[1 - DISP_WIDTH:]]) + val
+        new_text = ''.join([item for item in self.memory[1 - DISP_WIDTH:]])
+        if val is not None:
+            new_text += val
+            self.memory.append(val)
+
         self.label.configure(text=new_text)
-        self.memory.append(val)
         self.label.update()
 
     def clear(self):
         self.label.configure(text="")
         self.memory.clear()
         self.label.update()
+
+    def backspace(self):
+        self.memory = self.memory[:-1]
+        self.update_disp()
 
     def calculate(self):
         # Parse integers
@@ -150,6 +157,5 @@ class Calculator:
         # TODO: Execute calculation
 
 
-# TODO: add backspace
 if __name__ == "__main__":
     calc = Calculator()
