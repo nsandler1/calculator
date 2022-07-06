@@ -28,7 +28,10 @@ class Calculator():
             if self is self.MULTIPLY:
                 return arg1 * arg2
             elif self is self.DIVIDE:
-                return arg1 / arg2
+                res = arg1 / arg2
+                if not any(isinstance(arg, float) for arg in [arg1, arg2]):
+                    return int(res)
+                return res
             elif self is self.ADD:
                 return arg1 + arg2
             elif self is self.SUBTRACT:
@@ -152,12 +155,24 @@ class Calculator():
         self.display.update()
 
     def clear(self):
-        self.display.configure(text="")
+        self.display.configure(text="0")
         self.memory.clear()
         self.display.update()
 
     def parse(self):
         # Parse integers
+
+        def get_number(lst):
+            try:
+                return int(''.join(lst))
+            except ValueError:
+                try:
+                    #ret = float(''.join(lst))
+                    #return round(ret, 10)
+                    return float(''.join(lst))
+                except ValueError:
+                    return 0
+
         parsed_mem = []
 
         while len(self.memory) > 0:
@@ -165,10 +180,10 @@ class Calculator():
             while idx < len(self.memory) and self.Operation(self.memory[idx]) is self.Operation.NUMBER:
                 idx += 1
 
-            try:
-                arg = int(''.join(self.memory[:idx]))
-            except ValueError:
-                arg = 0
+            if idx == 0:
+                arg = get_number(self.memory)
+            else:
+                arg = get_number(self.memory[:idx])
 
             parsed_mem.append(arg)
 
@@ -178,13 +193,10 @@ class Calculator():
 
             self.memory = self.memory[idx + 1:]
 
-        print(parsed_mem)
-
         # Parse decimals
         while parsed_mem.count(self.Operation.DECIMAL) > 0:
             idx = parsed_mem.index(self.Operation.DECIMAL)
             new_val = float(f"{parsed_mem[idx - 1]}.{parsed_mem[idx + 1]}")
-            #parsed_mem.insert(idx + 1, new_val)
             parsed_mem[idx + 1] = new_val
 
             # left-shift parsed_mem by 2
@@ -195,24 +207,30 @@ class Calculator():
 
         print(parsed_mem)
 
-        # TODO: Parse parenthesis
         return parsed_mem
 
     def calculate(self):
-        # TODO: Execute calculation
+        # TODO: Parse parenthesis
+        # TODO: Fix bug with decimals (EX: 2.0-.2)
+
         parsed_mem = self.parse()
-        '''
         for operation in self.Operation.pemdas()[2:]:
             while parsed_mem.count(operation) > 0:
                 idx = parsed_mem.index(operation)
                 res = operation.eval(parsed_mem[idx - 1], parsed_mem[idx + 1])
-                parsed_mem.insert(idx + 2, res)
+                parsed_mem[idx + 1] = res
 
                 # left-shift parsed_mem by 2
-                for i in range(idx + 2, len(parsed_mem)):
-                    parsed_mem[i - 3] = parsed_mem[i]
+                for i in range(idx + 1, len(parsed_mem)):
+                    parsed_mem[i - 2] = parsed_mem[i]
 
-                parsed_mem = parsed_mem[:len(parsed_mem) - 3]
-        '''
+                parsed_mem = parsed_mem[:len(parsed_mem) - 2]
+
+        self.display.configure(text=str(parsed_mem[0]))
+        self.display.update()
+        self.memory.clear()
+        self.memory.append(str(parsed_mem[0]))
+
+
 if __name__ == "__main__":
     calc = Calculator()
