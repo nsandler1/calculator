@@ -8,6 +8,15 @@ BUTTON_WIDTH = 2
 BUTTON_FONT_SIZE = 32
 DISP_WIDTH = 10 # in character widths
 
+class Number():
+    def __init__(self, arg1, arg2=None):
+        self.arg1 = arg1
+        self.arg2 = arg2
+
+    @property
+    def value(self):
+        return int(self.arg1) if self.arg2 is None else float(f"{self.arg1}.{self.arg2}")
+
 class Calculator():
     class Operation(Enum):
         NUMBER = auto()
@@ -42,7 +51,7 @@ class Calculator():
             return (cls.L_PAREN, cls.R_PAREN, cls.MULTIPLY, cls.DIVIDE, cls.ADD, cls.SUBTRACT)
 
         @classmethod
-        def _missing_(cls, _):
+        def _missing_(cls, val):
             return cls.NUMBER
 
 
@@ -163,18 +172,19 @@ class Calculator():
         # Parse integers
 
         def get_number(lst):
-            try:
-                return int(''.join(lst))
-            except ValueError:
-                try:
-                    #ret = float(''.join(lst))
-                    #return round(ret, 10)
-                    return float(''.join(lst))
-                except ValueError:
+            str_ = ''.join(lst)
+            if str_.count(self.Operation.DECIMAL.value) > 0:
+                if len(lst) != 1:
                     return 0
+                #point_idx = str_.index(self.Operation.DECIMAL.value)
+                #num_digits = len(str_[point_idx + 1:])
+                #ret = float(str_)
+                #return round(ret, num_digits)
+                return float(str_)
+
+            return int(str_)
 
         parsed_mem = []
-
         while len(self.memory) > 0:
             idx = 0
             while idx < len(self.memory) and self.Operation(self.memory[idx]) is self.Operation.NUMBER:
@@ -192,11 +202,12 @@ class Calculator():
                 parsed_mem.append(op)
 
             self.memory = self.memory[idx + 1:]
-
+        print(parsed_mem)
         # Parse decimals
         while parsed_mem.count(self.Operation.DECIMAL) > 0:
             idx = parsed_mem.index(self.Operation.DECIMAL)
-            new_val = float(f"{parsed_mem[idx - 1]}.{parsed_mem[idx + 1]}")
+            arg1 = 0 if self.Operation(parsed_mem[idx - 1]) is not self.Operation.NUMBER else parsed_mem[idx - 1]
+            new_val = float(f"{arg1}.{parsed_mem[idx + 1]}")
             parsed_mem[idx + 1] = new_val
 
             # left-shift parsed_mem by 2
@@ -211,7 +222,6 @@ class Calculator():
 
     def calculate(self):
         # TODO: Parse parenthesis
-        # TODO: Fix bug with decimals (EX: 2.0-.2)
 
         parsed_mem = self.parse()
         for operation in self.Operation.pemdas()[2:]:
