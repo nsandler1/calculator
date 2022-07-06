@@ -15,6 +15,8 @@ class Calculator():
         SUBTRACT = "-"
         DIVIDE = "/"
         MULTIPLY = "x"
+        L_PAREN = "("
+        R_PAREN = ")"
         DECIMAL = "."
         EQUALS = "="
         BACKSPACE = "del"
@@ -113,14 +115,20 @@ class Calculator():
         self.gui.mainloop()
 
     def update_disp(self, val):
-        # TODO: prevent decimals from being placed multiple times in one number
-        # EX: 32.533.4
         new_text = ''.join([item for item in self.memory[1 - DISP_WIDTH:]])
 
-        op = self.Operation(val)
-        if op is self.Operation.BACKSPACE:
+        operation = self.Operation(val)
+        if operation is self.Operation.BACKSPACE:
             new_text = new_text[:-1]
             self.memory = self.memory[:-1]
+        elif operation is self.Operation.DECIMAL and self.memory.count(operation.value) > 0:
+            acceptable_ops = [self.Operation.ADD, self.Operation.SUBTRACT, self.Operation.DIVIDE, self.Operation.MULTIPLY, self.Operation.L_PAREN, self.Operation.R_PAREN]
+            mem_cpy = self.memory.copy()
+            mem_cpy.reverse()
+            slice_idx = mem_cpy.index(operation.value)
+            if any(self.Operation(op) in acceptable_ops for op in mem_cpy[:slice_idx]):
+                new_text += val
+                self.memory.append(val)
         else:
             new_text += val
             self.memory.append(val)
@@ -159,9 +167,6 @@ class Calculator():
         print(parsed_mem)
 
         # Parse decimals
-        # Validation:
-        #   - prohibit multiple decimals in a single number
-
         while parsed_mem.count(self.Operation.DECIMAL) > 0:
             idx = parsed_mem.index(self.Operation.DECIMAL)
             new_val = float(f"{parsed_mem[idx - 1]}.{parsed_mem[idx + 1]}")
