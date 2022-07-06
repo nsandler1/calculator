@@ -17,6 +17,7 @@ class Calculator():
         MULTIPLY = "x"
         DECIMAL = "."
         EQUALS = "="
+        BACKSPACE = "del"
 
         def __str__(self):
             return self.value
@@ -51,7 +52,7 @@ class Calculator():
 
         kwargs_secondary = {
             "fg": "white",
-            "bg": "#8a8a8a",
+            "bg": "#7a7a7a",
             **kwargs
         }
 
@@ -61,7 +62,7 @@ class Calculator():
             **kwargs
         }
 
-        kwargs_red = {
+        kwargs_warning = {
             "fg": "white",
             "bg": "#ff6363",
             **kwargs
@@ -95,14 +96,14 @@ class Calculator():
         tk.Button(self.gui, text=".", command=partial(self.update_disp, "."), **kwargs_primary).grid(column=2, row=5)
         tk.Button(self.gui, text="=", command=self.calculate, **kwargs_operations).grid(column=3, row=5)
 
-        tk.Button(self.gui, text="Quit", command=self.gui.destroy, **kwargs_red).grid(
+        tk.Button(self.gui, text="Quit", command=self.gui.destroy, **kwargs_warning).grid(
             column=0,
             row=6,
             columnspan=2,
             sticky=tk.W+tk.E
         )
 
-        tk.Button(self.gui, text="del", command=self.backspace, **kwargs_secondary).grid(
+        tk.Button(self.gui, text="del", command=partial(self.update_disp, "del"), **kwargs_secondary).grid(
             column=2,
             row=6,
             columnspan=2,
@@ -111,13 +112,19 @@ class Calculator():
 
         self.gui.mainloop()
 
-    def update_disp(self, val=None):
+    def update_disp(self, val):
         # TODO: prevent decimals from being placed multiple times in one number
         # EX: 32.533.4
         new_text = ''.join([item for item in self.memory[1 - DISP_WIDTH:]])
-        if val is not None:
+
+        op = self.Operation(val)
+        if op is self.Operation.BACKSPACE:
+            new_text = new_text[:-1]
+            self.memory = self.memory[:-1]
+        else:
             new_text += val
             self.memory.append(val)
+
 
         self.display.configure(text=new_text)
         self.display.update()
@@ -126,10 +133,6 @@ class Calculator():
         self.display.configure(text="")
         self.memory.clear()
         self.display.update()
-
-    def backspace(self):
-        self.memory = self.memory[:-1]
-        self.update_disp()
 
     def calculate(self):
         # Parse integers
