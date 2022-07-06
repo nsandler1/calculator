@@ -142,7 +142,7 @@ class Calculator():
         self.memory.clear()
         self.display.update()
 
-    def calculate(self):
+    def parse(self):
         # Parse integers
         parsed_mem = []
 
@@ -181,8 +181,11 @@ class Calculator():
         print(parsed_mem)
 
         # TODO: Parse parenthesis
+        return parsed_mem
 
+    def calculate(self):
         # TODO: Execute calculation
+        parsed_memory = self.parse()
 
 
 if __name__ == "__main__":
