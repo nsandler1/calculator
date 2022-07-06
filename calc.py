@@ -1,17 +1,14 @@
-from copy import deepcopy
-import tkinter
-from tkinter import *
-from tkinter import ttk
+import tkinter as tk
 
 from enum import Enum, auto
 from functools import partial
 
-GUI_DIM = "450x450"
+GUI_DIM = "264x450"
 BUTTON_WIDTH = 2
 BUTTON_FONT_SIZE = 32
 DISP_WIDTH = 10 # in character widths
 
-class Calculator:
+class Calculator():
     class Operation(Enum):
         NUMBER = auto()
         ADD = "+"
@@ -30,69 +27,89 @@ class Calculator:
 
     def __init__(self):
         self.memory = []
-        self.label_text = ""
-        self.gui = self.init_gui()
-        self.gui.mainloop()
+        self.gui = tk.Tk()
+        self.gui.geometry(GUI_DIM)
 
-    def init_gui(self):
-        gui = Tk()
-        gui.geometry(GUI_DIM)
-        display = ttk.Frame(gui, padding=10)
-        keypad = ttk.Frame(gui, padding=10)
-        display.grid()
-        keypad.grid()
-
-        ttk.Style().configure('TButton', font=('Helvetica', BUTTON_FONT_SIZE))
-        ttk.Style().configure('TLabel', font=('Helvetica', BUTTON_FONT_SIZE))
-        label = ttk.Label(display, relief="solid", width=DISP_WIDTH, text="")
-        label.grid(column=0, row=0)
+        self.display = tk.Label(self.gui, relief="solid", width=DISP_WIDTH, font=f"Helvetica {BUTTON_FONT_SIZE}", text="0")
+        self.display.grid(column=0, row=0, columnspan=4, sticky=tk.W+tk.E)
 
         kwargs = {
-            "width": BUTTON_WIDTH
+            "image": tk.PhotoImage(width=1, height=1),
+            "font": f"Helvetica {BUTTON_FONT_SIZE}",
+            "width": 50,
+            "height": 50,
+            "compound": "c",
+            "padx": 5,
+            "pady": 5
         }
 
-        ttk.Button(keypad, text="C", command=self.clear, **kwargs).grid(column=0, row=0)
-        ttk.Button(keypad, text="(", command=partial(self.update_disp, "("), **kwargs).grid(column=1, row=0)
-        ttk.Button(keypad, text=")", command=partial(self.update_disp, ")"), **kwargs).grid(column=2, row=0)
-        ttk.Button(keypad, text="/", command=partial(self.update_disp, "/"), **kwargs).grid(column=3, row=0)
+        kwargs_primary = {
+            "fg": "white",
+            "bg": "#a6a6a6",
+            **kwargs
+        }
 
-        ttk.Button(keypad, text="7", command=partial(self.update_disp, "7"), **kwargs).grid(column=0, row=1)
-        ttk.Button(keypad, text="8", command=partial(self.update_disp, "8"), **kwargs).grid(column=1, row=1)
-        ttk.Button(keypad, text="9", command=partial(self.update_disp, "9"), **kwargs).grid(column=2, row=1)
-        ttk.Button(keypad, text="X", command=partial(self.update_disp, "x"), **kwargs).grid(column=3, row=1)
+        kwargs_secondary = {
+            "fg": "white",
+            "bg": "#8a8a8a",
+            **kwargs
+        }
 
-        ttk.Button(keypad, text="4", command=partial(self.update_disp, "4"), **kwargs).grid(column=0, row=2)
-        ttk.Button(keypad, text="5", command=partial(self.update_disp, "5"), **kwargs).grid(column=1, row=2)
-        ttk.Button(keypad, text="6", command=partial(self.update_disp, "6"), **kwargs).grid(column=2, row=2)
-        ttk.Button(keypad, text="-", command=partial(self.update_disp, "-"), **kwargs).grid(column=3, row=2)
+        kwargs_operations = {
+            "fg": "black",
+            "bg": "#fc9d53",
+            **kwargs
+        }
 
-        ttk.Button(keypad, text="1", command=partial(self.update_disp, "1"), **kwargs).grid(column=0, row=3)
-        ttk.Button(keypad, text="2", command=partial(self.update_disp, "2"), **kwargs).grid(column=1, row=3)
-        ttk.Button(keypad, text="3", command=partial(self.update_disp, "3"), **kwargs).grid(column=2, row=3)
-        ttk.Button(keypad, text="+", command=partial(self.update_disp, "+"), **kwargs).grid(column=3, row=3)
+        kwargs_red = {
+            "fg": "white",
+            "bg": "#ff6363",
+            **kwargs
+        }
+        tk.Button(self.gui, text="C", command=self.clear, **kwargs_secondary).grid(column=0, row=1)
+        tk.Button(self.gui, text="(", command=partial(self.update_disp, "("), **kwargs_operations).grid(column=1, row=1)
+        tk.Button(self.gui, text=")", command=partial(self.update_disp, ")"), **kwargs_operations).grid(column=2, row=1)
+        tk.Button(self.gui, text="/", command=partial(self.update_disp, "/"), **kwargs_operations).grid(column=3, row=1)
 
-        ttk.Button(keypad, text="0", command=partial(self.update_disp, "0"), **kwargs).grid(
-            column=0,
-            row=4,
-            columnspan=2,
-            sticky=tkinter.W+tkinter.E
-        )
-        ttk.Button(keypad, text=".", command=partial(self.update_disp, "."), **kwargs).grid(column=2, row=4)
-        ttk.Button(keypad, text="=", command=self.calculate, **kwargs).grid(column=3, row=4)
+        tk.Button(self.gui, text="7", command=partial(self.update_disp, "7"), **kwargs_primary).grid(column=0, row=2)
+        tk.Button(self.gui, text="8", command=partial(self.update_disp, "8"), **kwargs_primary).grid(column=1, row=2)
+        tk.Button(self.gui, text="9", command=partial(self.update_disp, "9"), **kwargs_primary).grid(column=2, row=2)
+        tk.Button(self.gui, text="X", command=partial(self.update_disp, "x"), **kwargs_operations).grid(column=3, row=2)
 
-        ttk.Button(keypad, text="Quit", command=gui.destroy, **kwargs).grid(
+        tk.Button(self.gui, text="4", command=partial(self.update_disp, "4"), **kwargs_primary).grid(column=0, row=3)
+        tk.Button(self.gui, text="5", command=partial(self.update_disp, "5"), **kwargs_primary).grid(column=1, row=3)
+        tk.Button(self.gui, text="6", command=partial(self.update_disp, "6"), **kwargs_primary).grid(column=2, row=3)
+        tk.Button(self.gui, text="-", command=partial(self.update_disp, "-"), **kwargs_operations).grid(column=3, row=3)
+
+        tk.Button(self.gui, text="1", command=partial(self.update_disp, "1"), **kwargs_primary).grid(column=0, row=4)
+        tk.Button(self.gui, text="2", command=partial(self.update_disp, "2"), **kwargs_primary).grid(column=1, row=4)
+        tk.Button(self.gui, text="3", command=partial(self.update_disp, "3"), **kwargs_primary).grid(column=2, row=4)
+        tk.Button(self.gui, text="+", command=partial(self.update_disp, "+"), **kwargs_operations).grid(column=3, row=4)
+
+        tk.Button(self.gui, text="0", command=partial(self.update_disp, "0"), **kwargs_primary).grid(
             column=0,
             row=5,
-            columnspan=3,
-            sticky=tkinter.W+tkinter.E
+            columnspan=2,
+            sticky=tk.W+tk.E
         )
-        ttk.Button(keypad, text="del", command=self.backspace, **kwargs).grid(column=3, row=5)
+        tk.Button(self.gui, text=".", command=partial(self.update_disp, "."), **kwargs_primary).grid(column=2, row=5)
+        tk.Button(self.gui, text="=", command=self.calculate, **kwargs_operations).grid(column=3, row=5)
 
-        gui.rowconfigure((0,1), weight=1)  # make buttons stretch when window is resized
-        gui.columnconfigure((0,2), weight=1)
+        tk.Button(self.gui, text="Quit", command=self.gui.destroy, **kwargs_red).grid(
+            column=0,
+            row=6,
+            columnspan=2,
+            sticky=tk.W+tk.E
+        )
 
-        self.label = label
-        return gui
+        tk.Button(self.gui, text="del", command=self.backspace, **kwargs_secondary).grid(
+            column=2,
+            row=6,
+            columnspan=2,
+            sticky=tk.W+tk.E
+        )
+
+        self.gui.mainloop()
 
     def update_disp(self, val=None):
         # TODO: prevent decimals from being placed multiple times in one number
@@ -102,13 +119,13 @@ class Calculator:
             new_text += val
             self.memory.append(val)
 
-        self.label.configure(text=new_text)
-        self.label.update()
+        self.display.configure(text=new_text)
+        self.display.update()
 
     def clear(self):
-        self.label.configure(text="")
+        self.display.configure(text="")
         self.memory.clear()
-        self.label.update()
+        self.display.update()
 
     def backspace(self):
         self.memory = self.memory[:-1]
@@ -117,12 +134,17 @@ class Calculator:
     def calculate(self):
         # Parse integers
         parsed_mem = []
+        print(self.memory)
         while len(self.memory) > 0:
             idx = 0
             while idx < len(self.memory) and self.Operation(self.memory[idx]) is self.Operation.NUMBER:
                 idx += 1
 
-            arg = int(''.join(self.memory[:idx]))
+            try:
+                arg = int(''.join(self.memory[:idx]))
+            except ValueError:
+                arg = 0
+
             parsed_mem.append(arg)
 
             if idx < len(self.memory):
@@ -135,14 +157,12 @@ class Calculator:
 
         # Parse decimals
         # Validation:
-        #   - interpret .X as 0.X
         #   - prohibit multiple decimals in a single number
 
         while parsed_mem.count(self.Operation.DECIMAL) > 0:
             idx = parsed_mem.index(self.Operation.DECIMAL)
             new_val = float(f"{parsed_mem[idx - 1]}.{parsed_mem[idx + 1]}")
             parsed_mem.insert(idx + 2, new_val)
-            print(f"\n{parsed_mem}")
 
             # left-shift parsed_mem by 2
             for i in range(idx + 2, len(parsed_mem)):
