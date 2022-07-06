@@ -137,7 +137,7 @@ class Calculator():
     def calculate(self):
         # Parse integers
         parsed_mem = []
-        print(self.memory)
+
         while len(self.memory) > 0:
             idx = 0
             while idx < len(self.memory) and self.Operation(self.memory[idx]) is self.Operation.NUMBER:
