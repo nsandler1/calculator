@@ -1,12 +1,19 @@
 import tkinter as tk
 
+import platform
 from enum import Enum, auto
 from functools import partial
+
 
 GUI_DIM = "264x450"
 BUTTON_WIDTH = 2
 BUTTON_FONT_SIZE = 32
 DISP_WIDTH = 10 # in character widths
+
+class OS(Enum):
+    WINDOWS = "Windows"
+    MAC = "Darwin"
+    LINUX = "Linux"
 
 class Number():
     def __init__(self, arg1, arg2=None):
@@ -56,6 +63,7 @@ class Calculator():
 
 
     def __init__(self):
+        os = OS(platform.system())
         self.memory = []
         self.gui = tk.Tk()
         self.gui.geometry(GUI_DIM)
@@ -74,13 +82,13 @@ class Calculator():
         }
 
         kwargs_primary = {
-            "fg": "white",
+            "fg": "black" if os is not OS.WINDOWS else "#white",
             "bg": "#a6a6a6",
             **kwargs
         }
 
         kwargs_secondary = {
-            "fg": "white",
+            "fg": "black" if os is not OS.WINDOWS else "#white",
             "bg": "#7a7a7a",
             **kwargs
         }
@@ -92,7 +100,7 @@ class Calculator():
         }
 
         kwargs_warning = {
-            "fg": "white",
+            "fg": "black" if os is not OS.WINDOWS else "#white",
             "bg": "#ff6363",
             **kwargs
         }
