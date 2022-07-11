@@ -30,7 +30,7 @@ class Calculator():
         ADD = "+"
         SUBTRACT = "-"
         DIVIDE = "/"
-        MULTIPLY = "x"
+        MULTIPLY = "*"
         L_PAREN = "("
         R_PAREN = ")"
         DECIMAL = "."
@@ -109,7 +109,7 @@ class Calculator():
         tk.Button(self.gui, text="7", command=partial(self.update_disp, "7"), **kwargs_primary).grid(column=0, row=2)
         tk.Button(self.gui, text="8", command=partial(self.update_disp, "8"), **kwargs_primary).grid(column=1, row=2)
         tk.Button(self.gui, text="9", command=partial(self.update_disp, "9"), **kwargs_primary).grid(column=2, row=2)
-        tk.Button(self.gui, text="X", command=partial(self.update_disp, "x"), **kwargs_operations).grid(column=3, row=2)
+        tk.Button(self.gui, text="*", command=partial(self.update_disp, "*"), **kwargs_operations).grid(column=3, row=2)
 
         tk.Button(self.gui, text="4", command=partial(self.update_disp, "4"), **kwargs_primary).grid(column=0, row=3)
         tk.Button(self.gui, text="5", command=partial(self.update_disp, "5"), **kwargs_primary).grid(column=1, row=3)
