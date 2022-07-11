@@ -55,7 +55,7 @@ class Calculator():
             return (cls.L_PAREN, cls.R_PAREN, cls.MULTIPLY, cls.DIVIDE, cls.ADD, cls.SUBTRACT)
 
         @classmethod
-        def _missing_(cls, val):
+        def _missing_(cls, _):
             return cls.NUMBER
 
 
