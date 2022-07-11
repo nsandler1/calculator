@@ -15,6 +15,7 @@ class OS(Enum):
     MAC = "Darwin"
     LINUX = "Linux"
 
+
 class Number():
     def __init__(self, arg1, arg2=None):
         self.arg1 = arg1
@@ -24,8 +25,12 @@ class Number():
     def value(self):
         return int(self.arg1) if self.arg2 is None else float(f"{self.arg1}.{self.arg2}")
 
+    def __str__(self):
+        return str(self.value)
+
 class Calculator():
     class Operation(Enum):
+
         NUMBER = auto()
         ADD = "+"
         SUBTRACT = "-"
@@ -51,13 +56,12 @@ class Calculator():
                 return arg1 - arg2
 
         @classmethod
-        def pemdas(cls):
-            return (cls.L_PAREN, cls.R_PAREN, cls.MULTIPLY, cls.DIVIDE, cls.ADD, cls.SUBTRACT)
+        def order(cls):
+            return (cls.MULTIPLY, cls.DIVIDE, cls.ADD, cls.SUBTRACT)
 
         @classmethod
         def _missing_(cls, _):
-            return cls.NUMBER
-
+            return cls.NUMBER#cls.Number(val)
 
     def __init__(self):
         os = OS(platform.system())
@@ -157,7 +161,7 @@ class Calculator():
             mem_cpy = self.memory.copy()
             mem_cpy.reverse()
             slice_idx = mem_cpy.index(operation.value)
-            if any(self.Operation(op) in self.Operation.pemdas() for op in mem_cpy[:slice_idx]):
+            if any(self.Operation(op) in self.Operation.order() for op in mem_cpy[:slice_idx]):
                 new_text += val
                 self.memory.append(val)
         else:
@@ -169,15 +173,15 @@ class Calculator():
         self.display.update()
 
     def clear(self):
-        self.display.configure(text="0")
         self.memory.clear()
+        self.display.configure(text="0")
         self.display.update()
 
     def parse(self):
         # Parse integers
 
         def get_number(lst):
-            str_ = ''.join(lst)
+            str_ = ''.join(lst) # ''.join([op.value for op in lst])
             if str_.count(self.Operation.DECIMAL.value) > 0:
                 if len(lst) != 1:
                     return 0
@@ -208,6 +212,7 @@ class Calculator():
 
             self.memory = self.memory[idx + 1:]
         print(parsed_mem)
+
         # Parse decimals
         while parsed_mem.count(self.Operation.DECIMAL) > 0:
             idx = parsed_mem.index(self.Operation.DECIMAL)
@@ -229,7 +234,7 @@ class Calculator():
         # TODO: Parse parenthesis
 
         parsed_mem = self.parse()
-        for operation in self.Operation.pemdas()[2:]:
+        for operation in self.Operation.order():
             while parsed_mem.count(operation) > 0:
                 idx = parsed_mem.index(operation)
                 res = operation.eval(parsed_mem[idx - 1], parsed_mem[idx + 1])
