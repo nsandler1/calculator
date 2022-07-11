@@ -44,10 +44,7 @@ class Calculator():
             if self is self.MULTIPLY:
                 return arg1 * arg2
             elif self is self.DIVIDE:
-                res = arg1 / arg2
-                if not any(isinstance(arg, float) for arg in [arg1, arg2]):
-                    return int(res)
-                return res
+                return arg1 / arg2
             elif self is self.ADD:
                 return arg1 + arg2
             elif self is self.SUBTRACT:
